@@ -10,10 +10,10 @@
 #           - altough IBM has it's own RandomCircuit class this code serves as a part of wider generator, selector and optimizer 'framework'.                
 #
 #  Description:
+#           This module is responsible for the parallel execution of the properly configured execution_manager modules.
+#           The configuration covers the extent of the parallelism as well.
+#           This commited version is shipped with an already applied preconfiguration.
 #           
-#           
-#           
-#
 
 
 import multiprocessing

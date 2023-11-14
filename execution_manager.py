@@ -10,10 +10,21 @@
 #           - altough IBM has it's own RandomCircuit class this code serves as a part of wider generator, selector and optimizer 'framework'.                
 #
 #  Description:
-#           
-#           
-#           
+#           This module is the main configuration module and the entry point to the random circuit generation and pre-selection.
+#           It is possible to explicitly set:
+#           - the register size,
+#           - start depth,
+#           - stop depth,
+#           - generation/execution cycles on given depth.
 #
+#           Additionally, via this module one can set the different output files belong to different execution settings and measurements:
+#           - storage for generated circuit descriptor,
+#           - storage for generated circuit result vector,
+#           - storage for computed fidelities,
+#           - acceptance fidelity thresholds.
+#           
+#           Therefore this module is the configurable building block of parallel executions (see the description of execution_multiprocessor_scheduler).
+# 
 
 from randomized_quantum_circuit.randomized_quantum_circuit import *
 from circuit_vector_converter.circuit_vector_converter import *

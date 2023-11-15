@@ -17,7 +17,7 @@
 #           - stop depth,
 #           - generation/execution cycles on given depth.
 #
-#           Additionally, via this module one can set the different output files belong to different execution settings and measurements:
+#           Additionally, via this module one implicitly can set the different output files belong to different execution settings and measurements:
 #           - storage for generated circuit descriptor,
 #           - storage for generated circuit result vector,
 #           - storage for computed fidelities,
@@ -36,6 +36,11 @@ import time
 import math
 from pathlib import Path
 
+test_mode = False
+
+#
+#  This is a global function, handle accordingly.
+#
 def execution_function(**confargs):
 
     reg_size = 4
@@ -61,7 +66,9 @@ def execution_function(**confargs):
 
     number_of_depths = depth_stop - depth_start
 
-    # This generates a subfolder and a base for composite_id
+    #
+    #  This generates a subfolder and a base for composite_id
+    #
     if confargs["exec_group_id"] != None:
         execution_group_identifier = confargs["exec_group_id"]
     else:
@@ -75,6 +82,10 @@ def execution_function(**confargs):
     execution_group_identifier = str(execution_group_identifier)
     
 
+    #
+    #  The implicit, measurement and storage related settings are available from here.
+    #  The else branch represents the default settings
+    #
     if confargs["base_path"] != None:
         base_path = confargs["base_path"]
     else:
@@ -96,14 +107,33 @@ def execution_function(**confargs):
     path_fidkv_qmmet = base_path + qmmet_path + execution_group_identifier + "/"
     path_fikdv_figures = base_path + figures_path + execution_group_identifier + "/"
 
+    #
+    #  Storage path creation for circuit descriptors
+    #
     p = Path(path_fidkv_circ)
     p.mkdir(exist_ok=True, parents=True)
+
+    #
+    #  Storage path creation for result vectors
+    #
     p = Path(path_fidkv_rv)
     p.mkdir(exist_ok=True, parents=True)
+
+    #
+    #  Storage path creation for Aharonov fidelity
+    #
     p = Path(path_fidkv_afmet)
     p.mkdir(exist_ok=True, parents=True)
+
+    #
+    #  Storage path creation for Aharonov apostrophe fidelity
+    #
     p = Path(path_fidkv_afamet)
     p.mkdir(exist_ok=True, parents=True)
+
+    #
+    #  Storage path creation for Quantum mechanical fidelity
+    #
     p = Path(path_fidkv_qmmet)
     p.mkdir(exist_ok=True, parents=True)
     p = Path(path_fikdv_figures)
@@ -112,6 +142,9 @@ def execution_function(**confargs):
     cv = CircuitVisualizer()
     cv.set_path(path_fikdv_figures)
 
+    #
+    #  This file provides a quick summary/overview about the execution results without the need to dig through into the details in the individual result files.
+    #
     ficd_ex = FileIOforIdDataKVPairs(path_fidkv_circ + "exec_summary.txt")
 
     for i in range(depth_start, depth_stop):
@@ -122,8 +155,6 @@ def execution_function(**confargs):
         path_fidkv_afamet_used = path_fidkv_afamet + "d_{}".format(i) + ".txt"
         path_fidkv_qmmet_used = path_fidkv_qmmet + "d_{}".format(i) + ".txt"
 
-        #rqc = RandomizedQuantumCircuit(reg_size, i)
-        #rqc.setVerboseOff()
 
         ficd = FileIOforCircDescriptor(path_fidkv_circ_used)
         fidkv_rv = FileIOforIdDataKVPairs(path_fidkv_rv_used)
@@ -131,6 +162,9 @@ def execution_function(**confargs):
         fidkv_afamet = FileIOforIdDataKVPairs(path_fidkv_afamet_used)
         fidkv_qmmet = FileIOforIdDataKVPairs(path_fidkv_qmmet_used)
 
+        #
+        #  This block is for visual feedback purposes about the progress.
+        #
         progress_unit = exec_per_depth / 100;
         progress_keeper = 0
         progress_actual = 0
@@ -165,10 +199,19 @@ def execution_function(**confargs):
 
             return_value_qmmet = computer.compute(iv, 'QMMET')
 
+            #
+            #  This is the decision part: 
+            #
+            #       only that circuits will be kept for further investigation, which pass the condition expressed below.
+            #
+            #  Of course this condition can be cutomized according to specific needs.
+            #
             if (return_value_afmet > 0.93) or (return_value_afamet > 0.93) or (return_value_qmmet > 0.93):
 
+                #
+                #   Next to file savings feedback is also displayed on the terminal.
+                #
                 print("\n" + str(composite_id) + "\n")
-                #print("rc: ", result_vector)
                 print("AFMET, result: ", return_value_afmet)
                 print("AFAMET, result: ", return_value_afamet)
                 print("QMMET, result: ", return_value_qmmet)
@@ -179,28 +222,21 @@ def execution_function(**confargs):
                 ficd_ex.insert_data("QMMET, result ", str(return_value_qmmet))
 
 
-                #circ_descriptor = rqc.getConstRandCirRepresentation()
-                #ficd = FileIOforCircDescriptor(path_fidkv_circ_used)
                 ficd.insert_data(composite_id, rqc.getConstRandCirRepresentation())
-                #ficd.insert_data(composite_id, circ_descriptor)
-                #circ_descriptor = None
 
-                #fidkv_rv = FileIOforIdDataKVPairs(path_fidkv_rv_used)
                 fidkv_rv.insert_data(composite_id, result_vector)
 
-                #fidkv_afmet = FileIOforIdDataKVPairs(path_fidkv_afmet_used)
                 fidkv_afmet.insert_data(composite_id, return_value_afmet)
-
-                #fidkv_afamet = FileIOforIdDataKVPairs(path_fidkv_afamet_used)
                 fidkv_afamet.insert_data(composite_id, return_value_afamet)
-
-                #fidkv_afamet = FileIOforIdDataKVPairs(path_fidkv_afamet_used)
                 fidkv_qmmet.insert_data(composite_id, return_value_qmmet)
 
                 cv.circuit_drawer(str(composite_id), circ)
 
             composite_id = composite_id + 1
 
+            #
+            #  From here reset takes place
+            #
             return_value_qmmet = None
             return_value_afamet = None
             return_value_afmet = None
@@ -228,62 +264,79 @@ def execution_function(**confargs):
         del ficd
 
 
-def test_function():
+#
+#  Local test asset
+#  A wrapper class is applied for module related test functions to avoid name collisions.
+#
+class TestWrapperEM:
+    def __init__(self):
 
-    # This generates a subfolder
-    execution_identifier = int(time.time())
+    def test_function():
 
-    rqc = RandomizedQuantumCircuit(4,4)
-    rqc.setVerboseOn()
-    rqc.constructCircuit()
+        explicit_test = False
 
-    circ = rqc.getConstructedRandomCircuit()
-    circ_descriptor = rqc.getConstRandCirRepresentation()
+        if(explicit_test):
 
-    rc = RandomCircuit(circ, 0)
-    converter = CircuitVectorConverter()
-    result_vector = converter.convert(rc, 'COMP')
+            # This generates a subfolder
+            execution_identifier = int(time.time())
 
-    print("rc: ", result_vector)
+            rqc = RandomizedQuantumCircuit(4,4)
+            rqc.setVerboseOn()
+            rqc.constructCircuit()
 
-    computer = VectorMetricsComputer()
+            circ = rqc.getConstructedRandomCircuit()
+            circ_descriptor = rqc.getConstRandCirRepresentation()
 
-    iv = InputVector(result_vector)
-    return_value_afmet = computer.compute(iv, 'AFMET')
-    print("AFMET, result: ", return_value_afmet)
+            rc = RandomCircuit(circ, 0)
+            converter = CircuitVectorConverter()
+            result_vector = converter.convert(rc, 'COMP')
 
-    return_value_afamet = computer.compute(iv, 'AFAMET')
-    print("AFAMET, result: ", return_value_afamet)
+            print("rc: ", result_vector)
 
-    return_value_qmmet = computer.compute(iv, 'QMMET')
-    print("QMMET, result: ", return_value_qmmet)
+            computer = VectorMetricsComputer()
 
-    path_ficd = "stored_results__local/01_circuit_descriptors/test/tests.txt"
-    ficd = FileIOforCircDescriptor(path_ficd)
-    ficd.insert_data(execution_identifier, circ_descriptor)
+            iv = InputVector(result_vector)
+            return_value_afmet = computer.compute(iv, 'AFMET')
+            print("AFMET, result: ", return_value_afmet)
 
-    path_fidkv_rv= "stored_results__local/03_result_vectors/test/rv_tests.txt"
-    fidkv_rv = FileIOforIdDataKVPairs(path_fidkv_rv)
-    fidkv_rv.insert_data(execution_identifier, result_vector)
+            return_value_afamet = computer.compute(iv, 'AFAMET')
+            print("AFAMET, result: ", return_value_afamet)
 
-    path_fidkv_afmet= "stored_results__local/04_metrics/test/afmet_tests.txt"
-    fidkv_afmet = FileIOforIdDataKVPairs(path_fidkv_afmet)
-    fidkv_afmet.insert_data(execution_identifier, return_value_afmet)
+            return_value_qmmet = computer.compute(iv, 'QMMET')
+            print("QMMET, result: ", return_value_qmmet)
 
-    path_fidkv_afamet= "stored_results__local/04_metrics/test/afamet_tests.txt"
-    fidkv_afamet = FileIOforIdDataKVPairs(path_fidkv_afamet)
-    fidkv_afamet.insert_data(execution_identifier, return_value_afamet)
+            path_ficd = "stored_results__local/01_circuit_descriptors/test/tests.txt"
+            ficd = FileIOforCircDescriptor(path_ficd)
+            ficd.insert_data(execution_identifier, circ_descriptor)
 
-    path_fidkv_qmmet= "stored_results__local/04_metrics/test/qmmet_tests.txt"
-    fidkv_qmmet = FileIOforIdDataKVPairs(path_fidkv_qmmet)
-    fidkv_qmmet.insert_data(execution_identifier, return_value_qmmet)
+            path_fidkv_rv= "stored_results__local/03_result_vectors/test/rv_tests.txt"
+            fidkv_rv = FileIOforIdDataKVPairs(path_fidkv_rv)
+            fidkv_rv.insert_data(execution_identifier, result_vector)
+
+            path_fidkv_afmet= "stored_results__local/04_metrics/test/afmet_tests.txt"
+            fidkv_afmet = FileIOforIdDataKVPairs(path_fidkv_afmet)
+            fidkv_afmet.insert_data(execution_identifier, return_value_afmet)
+
+            path_fidkv_afamet= "stored_results__local/04_metrics/test/afamet_tests.txt"
+            fidkv_afamet = FileIOforIdDataKVPairs(path_fidkv_afamet)
+            fidkv_afamet.insert_data(execution_identifier, return_value_afamet)
+
+            path_fidkv_qmmet= "stored_results__local/04_metrics/test/qmmet_tests.txt"
+            fidkv_qmmet = FileIOforIdDataKVPairs(path_fidkv_qmmet)
+            fidkv_qmmet.insert_data(execution_identifier, return_value_qmmet)
 
 
-    path_figures = "stored_results__local/05_figures/test/"
+            path_figures = "stored_results__local/05_figures/test/"
 
-    cv = CircuitVisualizer()
-    cv.set_path(path_figures)
-    cv.circuit_drawer(str(execution_identifier), circ)
+            cv = CircuitVisualizer()
+            cv.set_path(path_figures)
+            cv.circuit_drawer(str(execution_identifier), circ)
 
-#test_function()
-#execution_function(reg_size = 4, exec_group_id = 00000000, depth_start = 4, depth_stop = 5, exec_per_depth = 2, base_path = None)
+        else:
+
+            execution_function(reg_size = 4, exec_group_id = 00000000, depth_start = 4, depth_stop = 5, exec_per_depth = 2, base_path = None)
+
+if __name__ == '__main__':
+    if test_mode:
+        twEM = TestWrapperEM() 
+        twEM.test_function()

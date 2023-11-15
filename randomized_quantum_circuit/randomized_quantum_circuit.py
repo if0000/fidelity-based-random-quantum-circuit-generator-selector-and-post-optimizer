@@ -20,6 +20,8 @@ from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 
 import random
 
+test_mode = False
+
 class RandomizedQuantumCircuit():
 
     #
@@ -199,13 +201,19 @@ class RandomizedQuantumCircuit():
         self.linearized_coordinate_associated_circuit.clear()
 
 #
-#   Local test asset
+#  Local test asset
+#  A wrapper class is applied for module related test functions to avoid name collisions.
 #
-def test_function():
+class TestWrapperRQC:
+    def __init__(self):
 
-    rqc = RandomizedQuantumCircuit(4,5)
-    rqc.setVerboseOn()
-    rqc.constructCircuit()
+    def test_function():
+
+        rqc = RandomizedQuantumCircuit(4,5)
+        rqc.setVerboseOn()
+        rqc.constructCircuit()
 
 if __name__ == '__main__':
-    test_function()
+    if test_mode:
+        twRQC = TestWrapperRQC() 
+        twRQC.test_function()

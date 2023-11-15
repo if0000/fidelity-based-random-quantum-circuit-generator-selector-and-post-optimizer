@@ -18,6 +18,8 @@
 
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, execute, Aer
 
+test_mode = False
+
 class RandomCircuit:
     def __init__(self, circ_instance, shots):
         self.circ_instance = circ_instance
@@ -122,27 +124,32 @@ factory.register_converter('EXEC', ExecutionConverter)
 
 
 #
-#   Local test asset
+#  Local test asset
+#  A wrapper class is applied for module related test functions to avoid name collisions.
 #
+class TestWrapperCVC:
+    def __init__(self):
 
-def test_function():
+    def test_function():
 
-    #   Test instances
-    q = QuantumRegister(2)
-    c = ClassicalRegister(2)
-    circ = QuantumCircuit(q, c)
+        #   Test instances
+        q = QuantumRegister(2)
+        c = ClassicalRegister(2)
+        circ = QuantumCircuit(q, c)
 
-    circ.x(0)
-    circ.h(1)
-    circ.barrier()
-    circ.cx(0, 1)
-    circ.barrier()
-    circ.h(0)
-    circ.x(1)
+        circ.x(0)
+        circ.h(1)
+        circ.barrier()
+        circ.cx(0, 1)
+        circ.barrier()
+        circ.h(0)
+        circ.x(1)
 
-    rc = RandomCircuit(circ, 1024)
-    converter = CircuitVectorConverter()
-    converter.convert(rc, 'COMP')
+        rc = RandomCircuit(circ, 1024)
+        converter = CircuitVectorConverter()
+        converter.convert(rc, 'COMP')
 
 if __name__ == '__main__':
-    test_function()
+    if test_mode:
+        twCVC = TestWrapperCVC() 
+        twCVC.test_function()

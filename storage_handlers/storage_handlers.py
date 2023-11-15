@@ -23,6 +23,8 @@
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, execute, Aer
 import numpy
 
+test_mode = False
+
 #
 #  Reslover may use the info read from external config file.
 #  Not yet implemented.
@@ -42,9 +44,7 @@ class FileIOforCircDescriptor:
     def create_data():
         pass
 
-    #
-    #  FIXME-20200422 A translator or deserializer should be implemented to replace the ugly reader below ;-)
-    #
+
     def read_data(self, circ_id):
         self.f = open(self.filename, "r")
         self.identifier = circ_id
@@ -272,37 +272,47 @@ class FileIOforIdDataKVPairs:
 
 
 #
-#   Local test asset
+#  Local test asset
+#  A wrapper class is applied for module related test functions to avoid name collisions.
 #
-def test_1_function():
-    ficd = FileIOforCircDescriptor("../../../qiskit_statevector__20200401v01__d13.txt")
-    variable = ficd.read_data("158577963908131")
-    print("Variable: ", variable)
+class TestWrapperSH:
+    def __init__(self):
 
-def test_2_function():
-    test_list = [ 1.76776695e-01+1.76776695e-01j,  1.76776695e-01-1.76776695e-01j, 
-                 -8.32667268e-17-2.50000000e-01j, -2.50000000e-01+6.93889390e-17j, 
-                 -1.76776695e-01+1.76776695e-01j,  1.76776695e-01+1.76776695e-01j,
-                  2.50000000e-01-5.55111512e-17j, -1.11022302e-16-2.50000000e-01j,
-                  1.76776695e-01+1.76776695e-01j,  1.76776695e-01-1.76776695e-01j,
-                 -5.55111512e-17-2.50000000e-01j, -2.50000000e-01+5.55111512e-17j,
-                 -1.76776695e-01+1.76776695e-01j,  1.76776695e-01+1.76776695e-01j,
-                  2.50000000e-01-6.93889390e-17j, -6.93889390e-17-2.50000000e-01j]
-    path_fidkv_rv= "../stored_results__local/03_result_vectors/rv_tests.txt"
-    fidkv_rv = FileIOforIdDataKVPairs(path_fidkv_rv)
-    fidkv_rv.insert_data("0000000000", "test_string")
-    fidkv_rv.insert_data("0000000001", test_list)
+    def test_1_function():
+        ficd = FileIOforCircDescriptor("../../../qiskit_statevector__20200401v01__d13.txt")
+        variable = ficd.read_data("158577963908131")
+        print("Variable: ", variable)
 
-def test_3_function():
-    path_fidkv_rv= "../stored_results__local/03_result_vectors/rv_tests.txt"
-    fidkv_rv = FileIOforIdDataKVPairs(path_fidkv_rv)
-    
-    print(fidkv_rv.read_data("0000000000"))
-    result_list = fidkv_rv.read_data("0000000001")
-    print(result_list)
-    print(complex(result_list[2]))
+    def test_2_function():
+        test_list = [ 1.76776695e-01+1.76776695e-01j,  1.76776695e-01-1.76776695e-01j, 
+                     -8.32667268e-17-2.50000000e-01j, -2.50000000e-01+6.93889390e-17j, 
+                     -1.76776695e-01+1.76776695e-01j,  1.76776695e-01+1.76776695e-01j,
+                      2.50000000e-01-5.55111512e-17j, -1.11022302e-16-2.50000000e-01j,
+                      1.76776695e-01+1.76776695e-01j,  1.76776695e-01-1.76776695e-01j,
+                     -5.55111512e-17-2.50000000e-01j, -2.50000000e-01+5.55111512e-17j,
+                     -1.76776695e-01+1.76776695e-01j,  1.76776695e-01+1.76776695e-01j,
+                      2.50000000e-01-6.93889390e-17j, -6.93889390e-17-2.50000000e-01j]
+        path_fidkv_rv= "../stored_results__local/03_result_vectors/rv_tests.txt"
+        fidkv_rv = FileIOforIdDataKVPairs(path_fidkv_rv)
+        fidkv_rv.insert_data("0000000000", "test_string")
+        fidkv_rv.insert_data("0000000001", test_list)
+
+    def test_3_function():
+        path_fidkv_rv= "../stored_results__local/03_result_vectors/rv_tests.txt"
+        fidkv_rv = FileIOforIdDataKVPairs(path_fidkv_rv)
+
+        print(fidkv_rv.read_data("0000000000"))
+        result_list = fidkv_rv.read_data("0000000001")
+        print(result_list)
+        print(complex(result_list[2]))
+
+    def test_function():
+        self.test_1_function()
+        self.test_2_function()
+        self.test_3_function()
+
 
 if __name__ == '__main__':
-    test_1_function()
-    test_2_function()
-    test_3_function()
+    if test_mode:
+        twSH = TestWrapperSH() 
+        twSH.test_function()

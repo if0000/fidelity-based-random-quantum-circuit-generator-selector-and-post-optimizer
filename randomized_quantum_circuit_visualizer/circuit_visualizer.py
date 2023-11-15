@@ -27,6 +27,8 @@
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, execute, Aer
 from qiskit.visualization import *
 
+test_mode = False
+
 class CircuitVisualizer:
     def __init__(self):
         pass
@@ -39,25 +41,31 @@ class CircuitVisualizer:
         circ.draw(output="mpl", filename=output)
 
 #
-#   Local test asset
+#  Local test asset
+#  A wrapper class is applied for module related test functions to avoid name collisions.
 #
-def test_function():
-    
-    #
-    #  Test purpose instances
-    #
-    q = QuantumRegister(2)
-    c = ClassicalRegister(2)
-    circ = QuantumCircuit(q, c)
+class TestWrapperCV:
+    def __init__(self):
 
-    circ.x(0)
-    circ.h(1)
-    
-    outputFile = "../stored_results__local/05_figures/test"
+    def test_function():
 
-    cv = CircuitVisualizer()
-    cv.set_path(outputFile)
-    cv.circuit_drawer("158577963908131", circ)
+        #
+        #  Test purpose instances
+        #
+        q = QuantumRegister(2)
+        c = ClassicalRegister(2)
+        circ = QuantumCircuit(q, c)
+
+        circ.x(0)
+        circ.h(1)
+
+        outputFile = "../stored_results__local/05_figures/test"
+
+        cv = CircuitVisualizer()
+        cv.set_path(outputFile)
+        cv.circuit_drawer("158577963908131", circ)
 
 if __name__ == '__main__':
-    test_function()
+    if test_mode:
+        twCV = TestWrapperCV() 
+        twCV.test_function()

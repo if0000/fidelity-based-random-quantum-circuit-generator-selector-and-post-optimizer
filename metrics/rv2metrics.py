@@ -184,6 +184,7 @@ factory.register_metrics('QMMET', QMFidelityMetrics)
 #
 class TestWrapperRVM:
     def __init__(self):
+        pass
 
     def test_function():
 

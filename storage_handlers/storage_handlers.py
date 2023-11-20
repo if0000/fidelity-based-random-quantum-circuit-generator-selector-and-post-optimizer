@@ -168,6 +168,339 @@ class FileIOforCircDescriptor:
 
                         self.circ.s(self.column_pointer)
                         self.column_occupied[self.column_pointer] = "0"
+                    
+                    if line.find("tdg-gate") != -1:
+                        if self.verbose == 1:
+                            print("inside tdg-gate")
+                            print(self.column_occupied)
+
+                        self.circ.tdg(self.column_pointer)
+                        self.column_occupied[self.column_pointer] = "0"
+
+                    self.handleNextFreeSlot()
+
+            if line.find(str("execution identifier: {}".format(self.identifier))) != -1:
+                self.read_config = 1
+
+            if ((self.read_config == 1) and line.find("end-of-descriptor") != -1) :
+                self.read_config = 0
+                break
+
+        self.f.close()
+
+        return self.circ
+
+    def read_data_with_circ_id(self, circ_id):
+        self.f = open(self.filename, "r")
+        self.identifier = circ_id
+        self.register = 0
+        self.depth = 0
+        self.read_config = 0
+        self.column_occupied = []
+        self.column_pointer = 0
+
+        self.initial_degree_mask = []
+
+        self.q = None
+        self.c = None
+        self.circ = None
+
+        self.verbose = 0
+
+        for line in self.f:
+
+            if self.read_config == 1:
+                if self.verbose == 1:
+                    print("line: {}".format(line))
+                if line.find("registers") != -1:
+                    a = line.split(",")
+                    self.register = int((a[0].split(":"))[1])
+                    self.depth = int((a[1].split(":"))[1])
+
+                    if self.verbose == 1:
+                        print("registers: {}".format(str(self.register)))
+                        print("depth: {}".format(str(self.depth)))
+
+                    self.q = QuantumRegister(self.register)
+                    self.c = ClassicalRegister(self.register)
+                    self.circ = QuantumCircuit(self.q, self.c)
+
+                    for i in range (0, self.register):
+                        self.column_occupied.append("1")
+
+                    if self.verbose == 1:
+                        print(self.column_occupied)
+
+                    continue
+
+
+                if self.register > 0:
+
+                    if line.find("wire") != -1:
+                        if self.verbose == 1:
+                            print("wire")
+                            print(self.column_occupied)
+
+                        self.column_occupied[self.column_pointer] = "0"
+
+                    if line.find("x-gate") != -1:
+                        if self.verbose == 1:
+                            print("U3 gate will be applied instead of x-gate")
+                            print(self.column_occupied)
+
+                        gate_name = self.circ.u3(pi, pi, 0, self.column_pointer)
+                        self.column_occupied[self.column_pointer] = "0"
+                        self.initial_degree_mask.append(pi)
+                        self.initial_degree_mask.append(pi)
+                        self.initial_degree_mask.append(0)
+
+                    if line.find("h-gate") != -1:
+                        if self.verbose == 1:
+                            print("h-gate")
+                            print(self.column_occupied)
+
+                        self.circ.h(self.column_pointer)
+                        self.column_occupied[self.column_pointer] = "0"
+
+                    if line.find("A, B") != -1:
+                        if self.verbose == 1:
+                            print("inside A, B line: {}".format(line))
+                            print(self.column_occupied)
+
+                        controlers = (line.split(":")[1]).split(",")
+
+                        if self.verbose == 1:
+                            print("controlers[0]: {}".format(str(int(controlers[0]))))
+                            print("controlers[1]: {}".format(str(int(controlers[1]))))
+
+                        self.column_occupied[int(controlers[0])] = "0"
+                        self.column_occupied[int(controlers[1])] = "0"
+
+                        self.circ.cx(int(controlers[0]), int(controlers[1]))
+
+                        if self.verbose == 1:
+                            print("AB-0: {}".format(self.column_occupied[int(controlers[0])]))
+                            print("AB-1: {}".format(self.column_occupied[int(controlers[1])]))
+
+                    if line.find("B, A") != -1:
+                        if self.verbose == 1:
+                            print("inside B, A")
+                            print(self.column_occupied)
+
+                        controlers = (line.split(":")[1]).split(",")
+
+                        if self.verbose == 1:
+                            print("controlers[0]: {}".format(str(int(controlers[0]))))
+                            print("controlers[1]: {}".format(str(int(controlers[1]))))
+
+                        self.column_occupied[int(controlers[0])] = "0"
+                        self.column_occupied[int(controlers[1])] = "0"
+
+                        self.circ.cx(int(controlers[0]), int(controlers[1]))
+
+                        if self.verbose == 1:
+                            print("BA-0: {}".format(self.column_occupied[int(controlers[0])]))
+                            print("BA-1: {}".format(self.column_occupied[int(controlers[1])]))
+                    
+                    if line.find("t-gate") != -1:
+                        if self.verbose == 1:
+                            print("U3 gate will be applied instead of t-gate")
+                            print(self.column_occupied)
+
+                        gate_name = self.circ.u3(0, 0, pi/4, self.column_pointer)
+                        self.column_occupied[self.column_pointer] = "0"
+                        self.initial_degree_mask.append(0)
+                        self.initial_degree_mask.append(0)
+                        self.initial_degree_mask.append(pi/4)
+
+                    if line.find("s-gate") != -1:
+                        if self.verbose == 1:
+                            print("U3 gate will be applied instead of s-gate")
+                            print(self.column_occupied)
+
+                        gate_name = self.circ.u3(0, 0, pi/2, self.column_pointer)
+                        self.column_occupied[self.column_pointer] = "0"
+                        self.initial_degree_mask.append(0)
+                        self.initial_degree_mask.append(0)
+                        self.initial_degree_mask.append(pi/2)
+                    
+                    if line.find("tdg-gate") != -1:
+                        if self.verbose == 1:
+                            print("U3 gate will be applied instead of tdg-gate")
+                            print(self.column_occupied)
+
+                        gate_name = self.circ.u3(0, 0, -pi/4, self.column_pointer)
+                        self.column_occupied[self.column_pointer] = "0"
+                        self.initial_degree_mask.append(0)
+                        self.initial_degree_mask.append(0)
+                        self.initial_degree_mask.append(-pi/2)
+
+                    self.handleNextFreeSlot()
+
+            if line.find(str("execution identifier: {}".format(self.identifier))) != -1:
+                self.read_config = 1
+
+            if ((self.read_config == 1) and line.find("end-of-descriptor") != -1) :
+                self.read_config = 0
+                break
+
+        self.f.close()
+
+        return self.circ
+    
+
+    def get_degree_mask(self):
+        return self.initial_degree_mask
+
+
+    def read_data_with_degree_mask(self, circ_id, degree_mask):
+        self.f = open(self.filename, "r")
+        self.identifier = circ_id
+        self.register = 0
+        self.depth = 0
+        self.read_config = 0
+        self.column_occupied = []
+        self.column_pointer = 0
+
+        self.mask_counter = 0
+
+        self.q = None
+        self.c = None
+        self.circ = None
+
+        self.verbose = 0
+
+        for line in self.f:
+
+            if self.read_config == 1:
+                if self.verbose == 1:
+                    print("line: {}".format(line))
+
+                if line.find("registers") != -1:
+                    a = line.split(",")
+                    self.register = int((a[0].split(":"))[1])
+                    self.depth = int((a[1].split(":"))[1])
+
+                    if self.verbose == 1:
+                        print("registers: {}".format(str(self.register)))
+                        print("depth: {}".format(str(self.depth)))
+
+                    self.q = QuantumRegister(self.register)
+                    self.c = ClassicalRegister(self.register)
+                    self.circ = QuantumCircuit(self.q, self.c)
+
+                    for i in range (0, self.register):
+                        self.column_occupied.append("1")
+
+                    if self.verbose == 1:
+                        print(self.column_occupied)
+
+                    continue
+
+
+                if self.register > 0:
+
+                    if line.find("wire") != -1:
+                        if self.verbose == 1:
+                            print("wire")
+                            print(self.column_occupied)
+
+                        self.column_occupied[self.column_pointer] = "0"
+
+                    if line.find("x-gate") != -1:
+                        if self.verbose == 1:
+                            print("U3 gate will be applied instead of x-gate")
+                            print(self.column_occupied)
+
+                        if (degree_mask[self.mask_counter] or degree_mask[self.mask_counter + 1] or degree_mask[self.mask_counter + 2]):
+                            gate_name = self.circ.u3(degree_mask[self.mask_counter], degree_mask[self.mask_counter + 1], degree_mask[self.mask_counter + 2], self.column_pointer)
+                        else:
+                            gate_name = self.circ.u3(pi, pi, 0, self.column_pointer)
+                        self.mask_counter = self.mask_counter + 3
+                        self.column_occupied[self.column_pointer] = "0"
+
+                    if line.find("h-gate") != -1:
+                        if self.verbose == 1:
+                            print("h-gate")
+                            print(self.column_occupied)
+
+                        self.circ.h(self.column_pointer)
+                        self.column_occupied[self.column_pointer] = "0"
+
+                    if line.find("A, B") != -1:
+                        if self.verbose == 1:
+                            print("inside A, B line: {}".format(line))
+                            print(self.column_occupied)
+
+                        controlers = (line.split(":")[1]).split(",")
+
+                        if self.verbose == 1:
+                            print("controlers[0]: {}".format(str(int(controlers[0]))))
+                            print("controlers[1]: {}".format(str(int(controlers[1]))))
+
+                        self.column_occupied[int(controlers[0])] = "0"
+                        self.column_occupied[int(controlers[1])] = "0"
+
+                        self.circ.cx(int(controlers[0]), int(controlers[1]))
+
+                        if self.verbose == 1:
+                            print("AB-0: {}".format(self.column_occupied[int(controlers[0])]))
+                            print("AB-1: {}".format(self.column_occupied[int(controlers[1])]))
+
+                    if line.find("B, A") != -1:
+                        if self.verbose == 1:
+                            print("inside B, A")
+                            print(self.column_occupied)
+
+                        controlers = (line.split(":")[1]).split(",")
+
+                        if self.verbose == 1:
+                            print("controlers[0]: {}".format(str(int(controlers[0]))))
+                            print("controlers[1]: {}".format(str(int(controlers[1]))))
+
+                        self.column_occupied[int(controlers[0])] = "0"
+                        self.column_occupied[int(controlers[1])] = "0"
+
+                        self.circ.cx(int(controlers[0]), int(controlers[1]))
+
+                        if self.verbose == 1:
+                            print("BA-0: {}".format(self.column_occupied[int(controlers[0])]))
+                            print("BA-1: {}".format(self.column_occupied[int(controlers[1])]))
+                    
+                    if line.find("t-gate") != -1:
+                        if self.verbose == 1:
+                            print("U3 gate will be applied instead of t-gate")
+                            print(self.column_occupied)
+
+                        if (degree_mask[self.mask_counter] or degree_mask[self.mask_counter + 1] or degree_mask[self.mask_counter + 2]):
+                            gate_name = self.circ.u3(degree_mask[self.mask_counter], degree_mask[self.mask_counter + 1], degree_mask[self.mask_counter + 2], self.column_pointer)
+                        else:
+                            gate_name = self.circ.u3(0, 0, pi/4, self.column_pointer)
+                        self.mask_counter = self.mask_counter + 3
+                        self.column_occupied[self.column_pointer] = "0"
+
+                    if line.find("s-gate") != -1:
+                        if self.verbose == 1:
+                            print("U3 gate will be applied instead of s-gate")
+                            print(self.column_occupied)
+                        
+                        if (degree_mask[self.mask_counter] or degree_mask[self.mask_counter + 1] or degree_mask[self.mask_counter + 2]):
+                            gate_name = self.circ.u3(degree_mask[self.mask_counter], degree_mask[self.mask_counter + 1], degree_mask[self.mask_counter + 2], self.column_pointer)
+                        else:
+                            gate_name = self.circ.u3(0, 0, pi/2, self.column_pointer)
+                        self.mask_counter = self.mask_counter + 3
+                        self.column_occupied[self.column_pointer] = "0"
+                    
+                    if line.find("tdg-gate") != -1:
+                        if self.verbose == 1:
+                            print("U3 gate will be applied instead of tdg-gate")
+                            print(self.column_occupied)
+                        if (degree_mask[self.mask_counter] or degree_mask[self.mask_counter + 1] or degree_mask[self.mask_counter + 2]):
+                            gate_name = self.circ.u3(degree_mask[self.mask_counter], degree_mask[self.mask_counter + 1], degree_mask[self.mask_counter + 2], self.column_pointer)
+                        else:
+                            gate_name = self.circ.u3(0, 0, -pi/4, self.column_pointer)
+                        self.mask_counter = self.mask_counter + 3
+                        self.column_occupied[self.column_pointer] = "0"
 
                     self.handleNextFreeSlot()
 
@@ -277,6 +610,7 @@ class FileIOforIdDataKVPairs:
 #
 class TestWrapperSH:
     def __init__(self):
+        pass
 
     def test_1_function():
         ficd = FileIOforCircDescriptor("../../../qiskit_statevector__20200401v01__d13.txt")

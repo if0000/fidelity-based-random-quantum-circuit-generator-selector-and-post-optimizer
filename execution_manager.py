@@ -270,8 +270,9 @@ def execution_function(**confargs):
 #
 class TestWrapperEM:
     def __init__(self):
+        pass
 
-    def test_function():
+    def test_function(self):
 
         explicit_test = False
 
@@ -334,7 +335,7 @@ class TestWrapperEM:
 
         else:
 
-            execution_function(reg_size = 4, exec_group_id = 00000000, depth_start = 4, depth_stop = 5, exec_per_depth = 2, base_path = None)
+            execution_function(reg_size = 4, exec_group_id = 00000000, depth_start = 4, depth_stop = 5, exec_per_depth = 2, exec_per_depth_start = None, base_path = None)
 
 if __name__ == '__main__':
     if test_mode:

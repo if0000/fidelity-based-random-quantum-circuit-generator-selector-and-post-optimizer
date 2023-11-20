@@ -206,6 +206,7 @@ class RandomizedQuantumCircuit():
 #
 class TestWrapperRQC:
     def __init__(self):
+        pass
 
     def test_function():
 

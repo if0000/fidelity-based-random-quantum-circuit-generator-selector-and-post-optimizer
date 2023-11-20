@@ -129,6 +129,7 @@ factory.register_converter('EXEC', ExecutionConverter)
 #
 class TestWrapperCVC:
     def __init__(self):
+        pass
 
     def test_function():
 

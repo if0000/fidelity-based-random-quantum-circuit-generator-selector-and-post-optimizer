@@ -23,7 +23,11 @@
 #
 
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, execute, Aer
+
 import numpy
+
+import math
+from math import pi
 
 test_mode = False
 
@@ -250,7 +254,12 @@ class FileIOforCircDescriptor:
                             print("U3 gate will be applied instead of x-gate")
                             print(self.column_occupied)
 
-                        gate_name = self.circ.u3(pi, pi, 0, self.column_pointer)
+                        #
+                        # Note: https://stackoverflow.com/questions/76939147/keep-receiving-error-attributeerror-quantumcircuit-object-has-no-attribute
+                        #       https://qiskit.org/documentation/release_notes.html#id379
+                        #
+                        #gate_name = self.circ.u3(pi, pi, 0, self.column_pointer)
+                        gate_name = self.circ.u(pi, pi, 0, self.column_pointer)
                         self.column_occupied[self.column_pointer] = "0"
                         self.initial_degree_mask.append(pi)
                         self.initial_degree_mask.append(pi)
@@ -309,7 +318,12 @@ class FileIOforCircDescriptor:
                             print("U3 gate will be applied instead of t-gate")
                             print(self.column_occupied)
 
-                        gate_name = self.circ.u3(0, 0, pi/4, self.column_pointer)
+                        #
+                        # Note: https://stackoverflow.com/questions/76939147/keep-receiving-error-attributeerror-quantumcircuit-object-has-no-attribute
+                        #       https://qiskit.org/documentation/release_notes.html#id379
+                        #
+                        #gate_name = self.circ.u3(0, 0, pi/4, self.column_pointer)
+                        gate_name = self.circ.u(0, 0, pi/4, self.column_pointer)                        
                         self.column_occupied[self.column_pointer] = "0"
                         self.initial_degree_mask.append(0)
                         self.initial_degree_mask.append(0)
@@ -320,7 +334,12 @@ class FileIOforCircDescriptor:
                             print("U3 gate will be applied instead of s-gate")
                             print(self.column_occupied)
 
-                        gate_name = self.circ.u3(0, 0, pi/2, self.column_pointer)
+                        #
+                        # Note: https://stackoverflow.com/questions/76939147/keep-receiving-error-attributeerror-quantumcircuit-object-has-no-attribute
+                        #       https://qiskit.org/documentation/release_notes.html#id379
+                        #
+                        #gate_name = self.circ.u3(0, 0, pi/2, self.column_pointer)
+                        gate_name = self.circ.u(0, 0, pi/2, self.column_pointer)
                         self.column_occupied[self.column_pointer] = "0"
                         self.initial_degree_mask.append(0)
                         self.initial_degree_mask.append(0)
@@ -331,7 +350,12 @@ class FileIOforCircDescriptor:
                             print("U3 gate will be applied instead of tdg-gate")
                             print(self.column_occupied)
 
-                        gate_name = self.circ.u3(0, 0, -pi/4, self.column_pointer)
+                        #
+                        # Note: https://stackoverflow.com/questions/76939147/keep-receiving-error-attributeerror-quantumcircuit-object-has-no-attribute
+                        #       https://qiskit.org/documentation/release_notes.html#id379
+                        #
+                        #gate_name = self.circ.u3(0, 0, -pi/4, self.column_pointer)
+                        gate_name = self.circ.u(0, 0, -pi/4, self.column_pointer)
                         self.column_occupied[self.column_pointer] = "0"
                         self.initial_degree_mask.append(0)
                         self.initial_degree_mask.append(0)
@@ -415,9 +439,19 @@ class FileIOforCircDescriptor:
                             print(self.column_occupied)
 
                         if (degree_mask[self.mask_counter] or degree_mask[self.mask_counter + 1] or degree_mask[self.mask_counter + 2]):
-                            gate_name = self.circ.u3(degree_mask[self.mask_counter], degree_mask[self.mask_counter + 1], degree_mask[self.mask_counter + 2], self.column_pointer)
+                            #
+                            # Note: https://stackoverflow.com/questions/76939147/keep-receiving-error-attributeerror-quantumcircuit-object-has-no-attribute
+                            #       https://qiskit.org/documentation/release_notes.html#id379
+                            #
+                            #gate_name = self.circ.u3(degree_mask[self.mask_counter], degree_mask[self.mask_counter + 1], degree_mask[self.mask_counter + 2], self.column_pointer)
+                            gate_name = self.circ.u(degree_mask[self.mask_counter], degree_mask[self.mask_counter + 1], degree_mask[self.mask_counter + 2], self.column_pointer)
                         else:
-                            gate_name = self.circ.u3(pi, pi, 0, self.column_pointer)
+                            #
+                            # Note: https://stackoverflow.com/questions/76939147/keep-receiving-error-attributeerror-quantumcircuit-object-has-no-attribute
+                            #       https://qiskit.org/documentation/release_notes.html#id379
+                            #
+                            #gate_name = self.circ.u3(pi, pi, 0, self.column_pointer)
+                            gate_name = self.circ.u(pi, pi, 0, self.column_pointer)
                         self.mask_counter = self.mask_counter + 3
                         self.column_occupied[self.column_pointer] = "0"
 
@@ -475,9 +509,19 @@ class FileIOforCircDescriptor:
                             print(self.column_occupied)
 
                         if (degree_mask[self.mask_counter] or degree_mask[self.mask_counter + 1] or degree_mask[self.mask_counter + 2]):
-                            gate_name = self.circ.u3(degree_mask[self.mask_counter], degree_mask[self.mask_counter + 1], degree_mask[self.mask_counter + 2], self.column_pointer)
+                            #
+                            # Note: https://stackoverflow.com/questions/76939147/keep-receiving-error-attributeerror-quantumcircuit-object-has-no-attribute
+                            #       https://qiskit.org/documentation/release_notes.html#id379
+                            #
+                            #gate_name = self.circ.u3(degree_mask[self.mask_counter], degree_mask[self.mask_counter + 1], degree_mask[self.mask_counter + 2], self.column_pointer)
+                            gate_name = self.circ.u(degree_mask[self.mask_counter], degree_mask[self.mask_counter + 1], degree_mask[self.mask_counter + 2], self.column_pointer)
                         else:
-                            gate_name = self.circ.u3(0, 0, pi/4, self.column_pointer)
+                            #
+                            # Note: https://stackoverflow.com/questions/76939147/keep-receiving-error-attributeerror-quantumcircuit-object-has-no-attribute
+                            #       https://qiskit.org/documentation/release_notes.html#id379
+                            #
+                            #gate_name = self.circ.u3(0, 0, pi/4, self.column_pointer)
+                            gate_name = self.circ.u(0, 0, pi/4, self.column_pointer)
                         self.mask_counter = self.mask_counter + 3
                         self.column_occupied[self.column_pointer] = "0"
 
@@ -487,9 +531,19 @@ class FileIOforCircDescriptor:
                             print(self.column_occupied)
                         
                         if (degree_mask[self.mask_counter] or degree_mask[self.mask_counter + 1] or degree_mask[self.mask_counter + 2]):
-                            gate_name = self.circ.u3(degree_mask[self.mask_counter], degree_mask[self.mask_counter + 1], degree_mask[self.mask_counter + 2], self.column_pointer)
+                            #
+                            # Note: https://stackoverflow.com/questions/76939147/keep-receiving-error-attributeerror-quantumcircuit-object-has-no-attribute
+                            #       https://qiskit.org/documentation/release_notes.html#id379
+                            #
+                            #gate_name = self.circ.u3(degree_mask[self.mask_counter], degree_mask[self.mask_counter + 1], degree_mask[self.mask_counter + 2], self.column_pointer)
+                            gate_name = self.circ.u(degree_mask[self.mask_counter], degree_mask[self.mask_counter + 1], degree_mask[self.mask_counter + 2], self.column_pointer)
                         else:
-                            gate_name = self.circ.u3(0, 0, pi/2, self.column_pointer)
+                            #
+                            # Note: https://stackoverflow.com/questions/76939147/keep-receiving-error-attributeerror-quantumcircuit-object-has-no-attribute
+                            #       https://qiskit.org/documentation/release_notes.html#id379
+                            #
+                            #gate_name = self.circ.u3(0, 0, pi/2, self.column_pointer)
+                            gate_name = self.circ.u(0, 0, pi/2, self.column_pointer)
                         self.mask_counter = self.mask_counter + 3
                         self.column_occupied[self.column_pointer] = "0"
                     
@@ -498,9 +552,19 @@ class FileIOforCircDescriptor:
                             print("U3 gate will be applied instead of tdg-gate")
                             print(self.column_occupied)
                         if (degree_mask[self.mask_counter] or degree_mask[self.mask_counter + 1] or degree_mask[self.mask_counter + 2]):
-                            gate_name = self.circ.u3(degree_mask[self.mask_counter], degree_mask[self.mask_counter + 1], degree_mask[self.mask_counter + 2], self.column_pointer)
+                            #
+                            # Note: https://stackoverflow.com/questions/76939147/keep-receiving-error-attributeerror-quantumcircuit-object-has-no-attribute
+                            #       https://qiskit.org/documentation/release_notes.html#id379
+                            #
+                            #gate_name = self.circ.u3(degree_mask[self.mask_counter], degree_mask[self.mask_counter + 1], degree_mask[self.mask_counter + 2], self.column_pointer)
+                            gate_name = self.circ.u(degree_mask[self.mask_counter], degree_mask[self.mask_counter + 1], degree_mask[self.mask_counter + 2], self.column_pointer)
                         else:
-                            gate_name = self.circ.u3(0, 0, -pi/4, self.column_pointer)
+                            #
+                            # Note: https://stackoverflow.com/questions/76939147/keep-receiving-error-attributeerror-quantumcircuit-object-has-no-attribute
+                            #       https://qiskit.org/documentation/release_notes.html#id379
+                            #
+                            #gate_name = self.circ.u3(0, 0, -pi/4, self.column_pointer)
+                            gate_name = self.circ.u(0, 0, -pi/4, self.column_pointer)
                         self.mask_counter = self.mask_counter + 3
                         self.column_occupied[self.column_pointer] = "0"
 

@@ -39,7 +39,7 @@ The allowed gate types were selected based on their stable implementation. The o
 
 The allowed gates are available and can be modified in the 'randomized_quantum_circuit.py' module, 'RandomizedQuantumCircuit' class. Currently available gates are: 
 - i-gate (wire),
-- x-gate ,
+- x-gate,
 - h-gate (hadamard),
 - t-gate,
 - s-gate,
@@ -81,7 +81,7 @@ Therefore three approaches had been selected for optimization purposes:
 - nearest neigbour search,
 - gradient search.
 
-During the executions, after the first round the gradient descent approach were dropped out due to it's high time complexity in case of 15 free parameters. Finally, the nearest neigbour approach yielded a very good fidelity: over 99 percent could be achieved. Moreover, by further resolution increasing this value can get arbitrary close to 100 percent with only 5 c-not gates.
+During the executions, after the first round the gradient search approach were dropped out due to it's high time complexity in case of 15 free parameters. Finally, the nearest neigbour approach yielded a very good fidelity: over 99 percent could be achieved. Moreover, by further resolution increasing this value can get arbitrary close to 100 percent with only 5 c-not gates.
 
 To be able to execute numerical optimization methods the already stored and transformed circuits had to be reloaded. Therefore the optimization related files are:
 - storage_handlers.py

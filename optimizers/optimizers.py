@@ -6,7 +6,7 @@
 #           https://tech.ronizongor.com
 #
 #  General notes: 
-#           - this is an experimental code for experimental purposes. For production use refactoring is required,
+#           - this is an experimental code for experimental purposes. For production use refactoring is required, eg.: this solution re-read the full circuit each and every time to check small differences. This is needless, only the new vector updated modification should be applied to the circuit, which is already in the memory.
 #           - altough IBM has it's own RandomCircuit class this code serves as a part of wider generator, selector and optimizer package.
 #
 #  Description:
@@ -34,6 +34,8 @@ from math import pi
 from pathlib import Path
 from operator import add
 
+test_mode = True
+
 #
 #    Based on dimension_component_analyser.py.
 #
@@ -45,32 +47,32 @@ class OptimizerDimensionAnalysis:
         # Switches.
         #
         self.print_csv = 1
-        self.print_verbose = 0
-        self.print_counter = 0
-        self.print_subconfig = 0
-        self.print_subresults = 0
-        self.print_subcircuits = 0
-        self.print_main_result = 0
-        self.print_main_circuits = 0
+        self.print_verbose = 1
+        self.print_counter = 1
+        self.print_subconfig = 1
+        self.print_subresults = 1
+        self.print_subcircuits = 1
+        self.print_main_result = 1
+        self.print_main_circuits = 1
 
 
         self.source_circuit_path = "stored_results__local/01_circuit_descriptors/aharonov/cabello_reduced.txt"
         self.source_circuit = "cabello_u"
-
-        self.destination_path = "stored_results__local/03_result_vectors/00_executions/cabello_reduced.txt"
 
         self.angle_resolution = pi/180
         self.resolution_multiplier = 1
         self.max_value = 360/self.resolution_multiplier
 
         self.ficd = FileIOforCircDescriptor(self.source_circuit_path)
-        self.circ_restored = ficd.read_data_with_circ_id(self.source_circuit)
+        self.circ_restored = self.ficd.read_data_with_circ_id(self.source_circuit)
 
         self.initial_vector = self.ficd.get_degree_mask()
         self.number_of_params = len(self.initial_vector)
 
         self.new_actual_vector = []
         self.alignment_vector = []
+
+        self.degree_mask = False
 
         self.qmmet_max = 0
         self.actual_qmmet_max = 0
@@ -91,12 +93,12 @@ class OptimizerDimensionAnalysis:
             if self.print_verbose:
                 print("Initial vector-2: ", self.initial_vector)
 
-            circ_restored = ficd.read_data_with_degree_mask(source_circuit, self.initial_vector)
+            self.circ_restored = self.ficd.read_data_with_degree_mask(self.source_circuit, self.initial_vector)
 
         if self.print_verbose:
-            print(circ_restored)
+            print(self.circ_restored)
 
-        rc = RandomCircuit(circ_restored, 0)
+        rc = RandomCircuit(self.circ_restored, 0)
         converter = CircuitVectorConverter()
         result_vector = converter.convert(rc, 'COMP')
         computer = VectorMetricsComputer()
@@ -107,9 +109,9 @@ class OptimizerDimensionAnalysis:
             print("return_value_qmmet: ", return_value_qmmet)
 
         self.actual_qmmet_max = return_value_qmmet
-        self.new_actual_vector = initial_vector[:]
+        self.new_actual_vector = self.initial_vector[:]
 
-        for i in range(0, number_of_params):
+        for i in range(0, self.number_of_params):
             self.alignment_vector.append(int(0))
 
 
@@ -122,7 +124,7 @@ class OptimizerDimensionAnalysis:
         #
         # Cycle for dimensions.
         #
-        for i in range(0, number_of_params):
+        for i in range(0, self.number_of_params):
             changing_alignment_vector = self.alignment_vector[:]
 
             #
@@ -135,7 +137,7 @@ class OptimizerDimensionAnalysis:
                 if self.print_verbose:
                     print("degree_mask: ", degree_mask)
 
-                circ_restored_1 = ficd.read_data_with_degree_mask(source_circuit, degree_mask)
+                circ_restored_1 = self.ficd.read_data_with_degree_mask(self.source_circuit, degree_mask)
 
                 if self.print_subcircuits:
                     print(circ_restored_1)
@@ -193,13 +195,13 @@ class OptimizerNearestNeighborSearch:
         # Switches.
         #
         self.print_csv = 1
-        self.print_verbose = 0
-        self.print_counter = 0
-        self.print_subconfig = 0
-        self.print_subresults = 0
-        self.print_subcircuits = 0
-        self.print_main_result = 0
-        self.print_main_circuits = 0
+        self.print_verbose = 1
+        self.print_counter = 1
+        self.print_subconfig = 1
+        self.print_subresults = 1
+        self.print_subcircuits = 1
+        self.print_main_result = 1
+        self.print_main_circuits = 1
 
 
         self.source_circuit_path = "stored_results__local/01_circuit_descriptors/aharonov/cabello_reduced.txt"
@@ -209,13 +211,15 @@ class OptimizerNearestNeighborSearch:
         self.resolution_multiplier = 1
 
         self.ficd = FileIOforCircDescriptor(self.source_circuit_path)
-        self.circ_restored = ficd.read_data_with_circ_id(self.source_circuit)
+        self.circ_restored = self.ficd.read_data_with_circ_id(self.source_circuit)
 
         self.initial_vector = self.ficd.get_degree_mask()
         self.number_of_params = len(self.initial_vector)
 
         self.new_actual_vector = []
         self.alignment_vector = []
+
+        self.degree_mask = False
 
         self.qmmet_max = 0
         self.actual_qmmet_max = 0
@@ -283,7 +287,7 @@ class OptimizerNearestNeighborSearch:
             if self.print_verbose:
                 print("degree_mask: ", degree_mask)
 
-            circ_restored_1 = self.ficd.read_data_with_degree_mask(source_circuit, degree_mask)
+            circ_restored_1 = self.ficd.read_data_with_degree_mask(self.source_circuit, degree_mask)
 
             if self.print_subcircuits:
                 print(circ_restored_1)
@@ -375,7 +379,7 @@ class OptimizerGradientSearch:
         self.resolution_multiplier = 1
 
         self.ficd = FileIOforCircDescriptor(self.source_circuit_path)
-        self.circ_restored = ficd.read_data_with_circ_id(self.source_circuit)
+        self.circ_restored = self.ficd.read_data_with_circ_id(self.source_circuit)
 
         self.initial_vector = self.ficd.get_degree_mask()
         self.number_of_params = len(self.initial_vector)
@@ -481,6 +485,11 @@ class OptimizerGradientSearch:
 
                 for k in v:
 
+                    #
+                    # Since this implementation heavily based on my memories here more investigation should be performed:
+                    # Maybe this code examining changing values only one direction (-), instead of two (+,-).
+                    # Therefore, this 'j' cycle should be executed twice and in the second round with opposite sign compared to the first round.
+                    #
                     if int(k) > 0:
                         changing_alignment_vector[positions_of_changing_params[instantaneous_counter]] = (-1)*alignment_vector[positions_of_changing_params[instantaneous_counter]]
 
@@ -494,7 +503,7 @@ class OptimizerGradientSearch:
                 if self.print_minor_verbose:
                     print("degree_mask: ", degree_mask)
 
-                circ_restored_1 = ficd.read_data_with_degree_mask(source_circuit, degree_mask)
+                circ_restored_1 = self.ficd.read_data_with_degree_mask(self.source_circuit, degree_mask)
 
                 if self.print_subcircuits:
                     print(circ_restored_1)
@@ -515,17 +524,17 @@ class OptimizerGradientSearch:
                     print("case_counter: ", case_counter)
 
                 case_counter = case_counter + 1
-                global_case_counter = global_case_counter + 1
+                self.global_case_counter = self.global_case_counter + 1
 
                 if self.print_csv_detailed:
-                    if actual_qmmet_max > qmmet_max:
-                        print("{}; {}; {}; {}".format(global_case_counter, actual_qmmet_max, return_value_qmmet, degree_mask))
+                    if self.actual_qmmet_max > self.qmmet_max:
+                        print("{}; {}; {}; {}".format(self.global_case_counter, self.actual_qmmet_max, return_value_qmmet, degree_mask))
                     else:
-                        print("{}; {}; {}; {}".format(global_case_counter, qmmet_max, return_value_qmmet, degree_mask))
+                        print("{}; {}; {}; {}".format(self.global_case_counter, self.qmmet_max, return_value_qmmet, degree_mask))
 
-                if return_value_qmmet > actual_qmmet_max:
-                    new_actual_vector = degree_mask[:]
-                    actual_qmmet_max = return_value_qmmet
+                if return_value_qmmet > self.actual_qmmet_max:
+                    self.new_actual_vector = degree_mask[:]
+                    self.actual_qmmet_max = return_value_qmmet
 
                     best_circ = circ_restored_1
       
@@ -557,3 +566,33 @@ class OptimizerGradientSearch:
 
             if self.print_main_circuits:
                 print(brc)
+
+#
+#  Local test asset
+#  A wrapper class is applied for module related test functions to avoid name collisions.
+#
+class TestWrapperOP:
+    def __init__(self):
+        pass
+
+    def test_1_function(self):
+        oda = OptimizerDimensionAnalysis()
+        oda.restore_and_init()
+        oda.seek_an_find()
+    
+    def test_2_function(self):
+        onns = OptimizerNearestNeighborSearch()
+        onns.restore_and_init()
+        onns.seek_an_find()
+
+    def test_3_function(self):
+        ogs = OptimizerGradientSearch()
+        ogs.restore_and_init()
+        ogs.seek_an_find()
+
+if __name__ == '__main__':
+    if test_mode:
+        twOP = TestWrapperOP() 
+        #twOP.test_1_function()
+        twOP.test_2_function()
+        #twOP.test_3_function()

@@ -6,8 +6,8 @@
 #           https://tech.ronizongor.com
 #
 #  General notes: 
-#           - this is an experimental code for experimental purposes. For production use refactoring is required,
-#           - altough IBM has it's own RandomCircuit class this code serves as a part of wider generator, selector and optimizer 'framework'.                
+#           - this is an experimental package for experimental purposes. For production use refactoring is required,
+#           - altough IBM has it's own RandomCircuit class this code serves as a part of wider generator, selector and optimizer package.
 #
 #  Description:
 #           This module is responsible for the remote execution of the quantum circuits on the IBM machines.

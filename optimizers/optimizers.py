@@ -5,7 +5,9 @@
 #  Author:  Istvan Finta
 #           https://tech.ronizongor.com
 #
-#  General note: this is an experimental code for experimental purposes. For production use refactoring is required.
+#  General notes: 
+#           - this is an experimental code for experimental purposes. For production use refactoring is required,
+#           - altough IBM has it's own RandomCircuit class this code serves as a part of wider generator, selector and optimizer package.
 #
 #  Description:
 #           This module is responsible to implement three types of circuit optimization approaches. These are:

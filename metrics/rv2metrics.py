@@ -7,7 +7,7 @@
 #
 #  General notes: 
 #           - this is an experimental code for experimental purposes. For production use refactoring is required,
-#           - altough IBM has it's own RandomCircuit class this code serves as a part of wider generator, selector and optimizer 'framework'.                
+#           - altough IBM has it's own RandomCircuit class this code serves as a part of wider generator, selector and optimizer package.
 #
 #  Description:
 #           This module is responsible of the computation of the different metrics related to result vectors.

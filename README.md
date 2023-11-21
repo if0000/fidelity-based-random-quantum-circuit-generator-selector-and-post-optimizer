@@ -1,8 +1,8 @@
 # Motivation
 
-This is an experimental program to generate quantum circuits in a predefined manner. Intentionally it was created to discover if the quantum mechanical singlet (Aharonov/Cabello) state can be produced from less than 15 c-not gates, which was the best iterative theoretical achievement at that time (early 2020). The achievement of singlet state is essential to implement the Quantum Byzantine Agreement. Byzantine Agreement has importance in the field of distributed computing, including fault tolerance, blockchain etc., to reach consensus among the participants.
+This is an experimental package to generate quantum circuits in a predefined manner. Intentionally it was created to discover if the quantum mechanical singlet (Aharonov/Cabello) state can be produced from less than 15 c-not gates, which was the best iterative theoretical achievement at that time (early 2020). The achievement of singlet state is essential to implement the Quantum Byzantine Agreement. Byzantine Agreement has importance in the field of distributed computing, including fault tolerance, blockchain etc., to reach consensus among the participants.
 
-The significance of this program is that with the help of this such a quantum circuit could be generated, which had only 5 c-not gates instead of 15. From noise, stability and applicability point of view this result is impressive. Moreover, it shows that there is room for further improvment in the field of theoretical circuit design (VQA).
+The significance of this package is that with the help of this such a quantum circuit could be generated, which had only 5 c-not gates instead of 15. From noise, stability and applicability point of view this result is impressive. Moreover, it shows that there is room for further improvment in the field of theoretical circuit design (VQA).
 
 
 # Installation and high level usage
@@ -10,14 +10,16 @@ The significance of this program is that with the help of this such a quantum ci
 To execute this code python3 has to be installed. Additionally IBM qiskit package is also required.
 
 You can install the required IBM qiskit packages with:
-- pip install qiskit,
-- pip install qiskit-aer
+```bash
+$pip install qiskit,
+$pip install qiskit-aer
+```
 comamnds.
 
 If it's all set, based on your preferences you can choose between the single- or the multiprocessor execution:
 ```bash
-> python3 execution_manager.py
-> python3 execution_multiprocessor_scheduler.py
+$python3 execution_manager.py
+$python3 execution_multiprocessor_scheduler.py
 ```
 
 The 'execution_manager' is a single thread realization and will start immediately with the pre-defined settings.
@@ -34,11 +36,22 @@ In the following you will find the block level description of the program. Paral
 ### I.a. Quantum mechanical related definitions - define the fidelity metrics and the allowed quantum gate types
 
 The allowed gate types were selected based on their stable implementation. The only required exception is the above mentioned c-not gate, which is very sensitive, still needed.
-Also objective quality metrics had to be defined, based on which it can be decided if a generated circuit is worth the effort for further investigation.
 
-The allowed gate are available and set can be modified in the 'randomized_quantum_circuit.py' module, 'RandomizedQuantumCircuit' class. Currently available gates are: i-gate, 
+The allowed gates are available and can be modified in the 'randomized_quantum_circuit.py' module, 'RandomizedQuantumCircuit' class. Currently available gates are: 
+- i-gate (wire),
+- x-gate ,
+- h-gate (hadamard),
+- t-gate,
+- s-gate,
+- cnot-gate.
 
-The quality/fidelity metrics are available and set can be modified in the 'rv2metrics.py' module. The different metrics are implemented in different classes. Currently available metrics are: statistical fidelity, corrected statistical fidelity, quantum mechanical fidelity.
+Objective quality metrics  are also had to be defined, based on which it can be decided if a generated circuit is worth the effort for further investigation.
+Following fidelity metrics are implemented for threshold value based selection procedure:
+- Cabello/Aharonov state fidelity (also referred as AFMET in the code),
+- Cabello/Aharonov subspace fidelity (also referred as AFAMET in the code),
+- Quantum Mechanical Fidelity (also referred as QMMET in the code).
+
+The quality/fidelity metrics are available and can be modified in the 'rv2metrics.py' module. The different metrics are implemented in different classes (AFMET, AFAMET, QMMET).
 
 
 ### I.b. Execution related definitions - register size, start and stop circuit depth, number of generated circuits on a given depth, parellelism, storage, etc.

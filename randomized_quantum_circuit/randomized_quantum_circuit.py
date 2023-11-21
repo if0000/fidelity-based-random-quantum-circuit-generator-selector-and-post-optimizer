@@ -8,7 +8,7 @@
 #
 #  General notes: 
 #           - this is an experimental code for experimental purposes. For production use refactoring is required,
-#           - altough IBM has it's own RandomCircuit class this code serves as a part of wider generator, selector and optimizer 'framework'.                
+#           - altough IBM has it's own RandomCircuit class this code serves as a part of wider generator, selector and optimizer package.
 #
 #  Description:
 #           This is the main class of the random circuit generator model. It implements the randomized circuit generation with the predefined gate types.

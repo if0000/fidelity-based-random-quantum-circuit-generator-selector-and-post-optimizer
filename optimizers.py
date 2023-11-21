@@ -593,6 +593,6 @@ class TestWrapperOP:
 if __name__ == '__main__':
     if test_mode:
         twOP = TestWrapperOP() 
-        #twOP.test_1_function()
-        twOP.test_2_function()
+        twOP.test_1_function()
+        #twOP.test_2_function()
         #twOP.test_3_function()

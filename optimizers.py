@@ -258,7 +258,7 @@ class OptimizerNearestNeighborSearch:
         self.actual_qmmet_max = return_value_qmmet
         self.new_actual_vector = self.initial_vector[:]
 
-        for i in range(0, number_of_params):
+        for i in range(0, self.number_of_params):
             self.alignment_vector.append(int(0))
 
 
@@ -272,15 +272,15 @@ class OptimizerNearestNeighborSearch:
         #
         # Cycle for visiting all neighbor of a given vector.
         #
-        for i in range(0, 2*number_of_params):
-        #for i in range(0, number_of_params):
+        for i in range(0, 2*self.number_of_params):
+        #for i in range(0, self.number_of_params):
 
             changing_alignment_vector = self.alignment_vector[:]
 
-            if(i < number_of_params):
+            if(i < self.number_of_params):
               changing_alignment_vector[i] = changing_alignment_vector[i] + (self.resolution_multiplier * self.angle_resolution)
             else:
-              changing_alignment_vector[(i - number_of_params)] = changing_alignment_vector[(i - number_of_params)] - (self.resolution_multiplier * self.angle_resolution)
+              changing_alignment_vector[(i - self.number_of_params)] = changing_alignment_vector[(i - self.number_of_params)] - (self.resolution_multiplier * self.angle_resolution)
             #changing_alignment_vector[i] = changing_alignment_vector[i] + (self.resolution_multiplier * self.angle_resolution)
             degree_mask = list( map(add, changing_alignment_vector, actual_vector))
 
@@ -593,6 +593,6 @@ class TestWrapperOP:
 if __name__ == '__main__':
     if test_mode:
         twOP = TestWrapperOP() 
-        twOP.test_1_function()
-        #twOP.test_2_function()
+        #twOP.test_1_function()
+        twOP.test_2_function()
         #twOP.test_3_function()
